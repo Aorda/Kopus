@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+
+from termcolor import colored, cprint
+import socket
+import os
+
+
+cprint("\nv1.0", "red", attrs=["bold"])
+cprint(" _  __", "yellow", attrs=["bold"])
+cprint("| |/ /___  _ __  _   _ ___ ", "yellow", attrs=["bold"])
+cprint("| ' // _ \| '_ \| | | / __|", "yellow", attrs=["bold"])
+cprint("| . \ (_) | |_) | |_| \__ \\", "yellow", attrs=["bold"])
+cprint("|_|\_\___/| .__/ \__,_|___/", "yellow", attrs=["bold"])
+cprint("          |_|\n", "yellow", attrs=["bold"])
