@@ -1,14 +1,66 @@
 #!/usr/bin/python3
 
 from termcolor import colored, cprint
+import RPi.GPIO as gpio
 import socket
+import time
+import sys
 import os
 
+host = ""
+port = 2121
 
-cprint("\nv1.0", "red", attrs=["bold"])
+gpio.setmode(gpio.BCM)
+
+led = 5
+gpio.setup(led, gpio.OUT)
+
+cprint("\nv1.0", "green", attrs=["bold"])
 cprint(" _  __", "yellow", attrs=["bold"])
 cprint("| |/ /___  _ __  _   _ ___ ", "yellow", attrs=["bold"])
 cprint("| ' // _ \| '_ \| | | / __|", "yellow", attrs=["bold"])
 cprint("| . \ (_) | |_) | |_| \__ \\", "yellow", attrs=["bold"])
 cprint("|_|\_\___/| .__/ \__,_|___/", "yellow", attrs=["bold"])
 cprint("          |_|\n", "yellow", attrs=["bold"])
+
+mSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+mSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+try:
+    mSocket.bind((host, port))
+    mSocket.listen(4)
+except:
+    cprint("Server başlatılırken sorun oluştu! Ayarlarda girmiş olduğunuz port numarasını (" + str(port) + ") kontrol edin.\n", "red", attrs=["bold"])
+    mSocket.close()
+    sys.exit()
+
+
+try:
+    while 1:
+        conn, addr = mSocket.accept()
+        print("Yeni Bağlantı -> " + str(addr))
+        while 1:
+            data = conn.recv(1024)
+            if (data):
+                data = data.decode()
+                print(str(data))
+                if(data == "1\n"):
+                    print("Led yakılıyor!")
+                    gpio.output(led, gpio.HIGH)
+                if(data == "0\n"):
+                    print("Led söndürülüyor!")
+                    gpio.output(led, gpio.LOW)
+            else:
+                break
+except KeyboardInterrupt:
+    cprint("\nÇıkılıyor...\n", "green", attrs=["bold"])
+    gpio.cleanup()
+    mSocket.close()
+    sys.exit()
+except:
+    cprint("Bağlantı sağlanırken bir sorun oluştu! Lütfen ağ bağlantınızı kontrol edin.\n", "red", attrs=["bold"])
+    mSocket.close()
+    sys.exit()
+
+gpio.cleanup()
+mSocket.close()
